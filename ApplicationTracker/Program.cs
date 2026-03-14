@@ -26,11 +26,16 @@ builder.Services.AddDbContext<AppDbContext>(opts =>
 
 builder.Services.AddScoped<IJobApplicationService, JobApplicationService>();
 
+builder.Services.AddCors(options =>
+    options.AddDefaultPolicy(policy =>
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+
 // ------------------------------------------------------------------
 // Pipeline
 // ------------------------------------------------------------------
 
 var app = builder.Build();
+app.UseCors();
 
 // Apply any pending EF migrations automatically on startup
 using (var scope = app.Services.CreateScope())
