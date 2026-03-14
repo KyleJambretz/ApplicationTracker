@@ -1,6 +1,5 @@
 ﻿namespace ApplicationTracker.Models
 {
-
     public enum ApplicationStatus
     {
         Applied,
