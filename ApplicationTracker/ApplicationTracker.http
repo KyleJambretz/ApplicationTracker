@@ -1,6 +1,32 @@
 @ApplicationTracker_HostAddress = http://localhost:5098
 
-GET {{ApplicationTracker_HostAddress}}/weatherforecast/
+GET {{ApplicationTracker_HostAddress}}/api/jobapplications/
 Accept: application/json
 
 ###
+
+POST {{ApplicationTracker_HostAddress}}/api/jobapplications/
+content-type: application/json
+{
+  "CompanyName": "Google",
+  "JobTitle": "Junior Software Developer",
+  "JobUrl": "www.google.com",
+  "Notes": "Da google or da bob fo today"
+}
+
+###
+
+GET {{ApplicationTracker_HostAddress}}/api/jobapplications/1
+Accept: application/json
+
+###
+
+PUT {{ApplicationTracker_HostAddress}}/api/jobapplications/1
+content-type: application/json
+{
+  "Notes": "Application for Google as a junior software developer"
+}
+
+###
+
+DELETE {{ApplicationTracker_HostAddress}}/api/jobapplications/1
