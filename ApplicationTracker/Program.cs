@@ -26,24 +26,17 @@ builder.Services.AddDbContext<AppDbContext>(opts =>
 
 builder.Services.AddScoped<IJobApplicationService, JobApplicationService>();
 
-builder.Services.AddCors(options =>
-    options.AddDefaultPolicy(policy =>
-        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
-
 // ------------------------------------------------------------------
 // Pipeline
 // ------------------------------------------------------------------
 
 var app = builder.Build();
-app.UseCors();
 
 // Apply any pending EF migrations automatically on startup
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();   // Creates the schema if it doesn't exist yet.
-                                   // Swap to db.Database.Migrate() once you add
-                                   // proper EF migrations via `dotnet ef migrations add`.
+    db.Database.EnsureCreated();
 }
 
 if (app.Environment.IsDevelopment())
@@ -52,6 +45,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();   // serves everything in wwwroot/
+
 app.MapControllers();
+app.MapFallbackToFile("index.html");  // always falls back to index.html
 
 app.Run();
