@@ -472,6 +472,17 @@
         </div>
     </div>
 
+    <!-- ── Notes modal ────────────────────────────────────────────────── -->
+    <div class="overlay" id="notes-overlay" onclick="handleNotesOverlayClick(event)">
+        <div class="modal">
+            <div class="modal-title" id="notes-modal-title">Notes</div>
+            <p id="notes-modal-body" style="font-size:0.85rem;line-height:1.7;white-space:pre-wrap;color:var(--text);"></p>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeNotes()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ── Toast ──────────────────────────────────────────────────────── -->
     <div class="toast" id="toast"></div>
 
@@ -530,8 +541,8 @@
               <div class="app-company">${esc(a.companyName)} &mdash; <em style="font-style:normal;color:var(--muted)">${esc(a.jobTitle)}</em></div>
               <div class="app-meta">
                 <span>${formatDate(a.appliedDate)}</span>
-                ${a.jobUrl ? `<a href="${esc(a.jobUrl)}" target="_blank" style="color:var(--muted);text-decoration:none;">↗ listing</a>` : ''}
-                ${a.notes ? `<span title="${esc(a.notes)}">📝 notes</span>` : ''}
+                ${a.jobUrl ? `<a href="${safeUrl(a.jobUrl)}" target="_blank" style="color:var(--muted);text-decoration:none;">↗ listing</a>` : ''}
+                ${a.notes ? `<button onclick="openNotes(${a.id})" style="background:none;border:none;cursor:pointer;color:var(--muted);font-family:'DM Mono',monospace;font-size:0.7rem;padding:0;">📝 notes</button>` : ''}
               </div>
             </div>
             <div class="app-actions">
@@ -552,6 +563,23 @@
                 fetchApplications();
             });
         });
+
+        // ── Notes modal ─────────────────────────────────────────────────
+        function openNotes(id) {
+            const a = applications.find(x => x.id === id);
+            if (!a) return;
+            document.getElementById('notes-modal-title').textContent = `${a.companyName} — notes`;
+            document.getElementById('notes-modal-body').textContent = a.notes ?? '';
+            document.getElementById('notes-overlay').classList.add('open');
+        }
+
+        function closeNotes() {
+            document.getElementById('notes-overlay').classList.remove('open');
+        }
+
+        function handleNotesOverlayClick(e) {
+            if (e.target === document.getElementById('notes-overlay')) closeNotes();
+        }
 
         // ── Modal helpers ───────────────────────────────────────────────
         function openModal() {
@@ -635,6 +663,11 @@
         }
 
         // ── Utilities ───────────────────────────────────────────────────
+        function safeUrl(url) {
+            if (!url) return '#';
+            return /^https?:\/\//i.test(url) ? esc(url) : esc('https://' + url);
+        }
+
         function esc(str) {
             return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
